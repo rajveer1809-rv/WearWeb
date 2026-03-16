@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Update Product{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="card-title mb-0">
+            <i class="bi bi-pencil-square"></i> Update Product
+          </h4>
+        </div>
+        <div class="card-body p-4">
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <!-- Product Name -->
+              <div class="col-md-6">
+                <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">Product Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                  <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Category -->
+              <div class="col-md-6">
+                <label for="{{ form.category.id_for_label }}" class="form-label fw-bold">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                  <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Description -->
+              <div class="col-12">
+                <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                  <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Price -->
+              <div class="col-md-4">
+                <label for="{{ form.price.id_for_label }}" class="form-label fw-bold">Price (₹)</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                  <div class="text-danger small">{{ form.price.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Color -->
+              <div class="col-md-4">
+                <label for="{{ form.color.id_for_label }}" class="form-label fw-bold">Color</label>
+                {{ form.color }}
+                {% if form.color.errors %}
+                  <div class="text-danger small">{{ form.color.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Size -->
+              <div class="col-md-4">
+                <label for="{{ form.size.id_for_label }}" class="form-label fw-bold">Size</label>
+                {{ form.size }}
+                {% if form.size.errors %}
+                  <div class="text-danger small">{{ form.size.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Stock -->
+              <div class="col-md-6">
+                <label for="{{ form.stock.id_for_label }}" class="form-label fw-bold">Stock Quantity</label>
+                {{ form.stock }}
+                {% if form.stock.errors %}
+                  <div class="text-danger small">{{ form.stock.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Image -->
+              <div class="col-md-6">
+                <label for="{{ form.image.id_for_label }}" class="form-label fw-bold">Product Image</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                  <div class="text-danger small">{{ form.image.errors.0 }}</div>
+                {% endif %}
+                <div class="form-text">Leave empty to keep current image</div>
+              </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="d-flex gap-3 mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle"></i> Update Product
+              </button>
+              <a href="{% url 'vendor_products' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Cancel
+              </a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+
+  .card {
+    border-radius: 15px;
+  }
+
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+</style>
+
+{% endblock %}

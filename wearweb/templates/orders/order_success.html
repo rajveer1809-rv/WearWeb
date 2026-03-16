@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="text-center">
+    <h2 class="text-success">Order Placed Successfully!</h2>
+    <p class="lead">Your order has been placed and payment processed.</p>
+    <a href="{% url 'my_orders' %}" class="btn btn-primary">View My Orders</a>
+    <a href="{% url 'product_list' %}" class="btn btn-secondary">Continue Shopping</a>
+</div>
+
+{% endblock %}

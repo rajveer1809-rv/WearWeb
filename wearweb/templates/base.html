@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WearWeb - Your Fashion Destination{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar-nav .nav-link {
+            font-weight: 500;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header -->
+    <div class="bg-dark text-white py-1">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small><i class="bi bi-truck"></i> Free shipping on orders above ₹999</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small><i class="bi bi-headset"></i> 24/7 Customer Support</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand text-primary fw-bold" href="{% url 'home' %}">
+                <i class="bi bi-shop"></i> WearWeb
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Search Bar (Desktop) -->
+                <form class="d-flex mx-4 flex-grow-1" method="GET" action="{% url 'product_list' %}">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Search for products, brands..." value="{{ request.GET.search }}">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <!-- Navigation Links -->
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product_list' %}">
+                            <i class="bi bi-grid"></i> Products
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        {% if user.role == "vendor" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'vendor_products' %}">
+                                    <i class="bi bi-box-seam"></i> My Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'vendor_dashboard' %}">
+                                    <i class="bi bi-graph-up"></i> Dashboard
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'cart_page' %}">
+                                    <i class="bi bi-cart"></i> Cart
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'liked_products' %}">
+                                    <i class="bi bi-heart"></i> Liked
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'my_orders' %}">
+                                    <i class="bi bi-receipt"></i> Orders
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.email|truncatechars:15 }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="bi bi-person"></i> Profile
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2 px-3" href="{% url 'signup' %}">
+                                <i class="bi bi-person-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Search Bar -->
+    <div class="d-lg-none bg-light p-3 border-bottom">
+        <form method="GET" action="{% url 'product_list' %}">
+            <div class="input-group">
+                <input class="form-control" type="search" name="search" placeholder="Search products..." value="{{ request.GET.search }}">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Company Info -->
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-shop"></i> WearWeb
+                    </h5>
+                    <p class="mb-3">Your ultimate destination for fashion. Discover the latest trends from top vendors worldwide.</p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-white"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-twitter fs-5"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-youtube fs-5"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-white text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-white text-decoration-none">Products</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="mb-2"><a href="{% url 'my_orders' %}" class="text-white text-decoration-none">My Orders</a></li>
+                        {% else %}
+                        <li class="mb-2"><a href="{% url 'login' %}" class="text-white text-decoration-none">Login</a></li>
+                        {% endif %}
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Categories</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'product_list' %}" class="text-white text-decoration-none">All Products</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Men</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Women</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Kids</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Customer Service</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-truck me-2"></i>Free Shipping</li>
+                        <li class="mb-2"><i class="bi bi-arrow-clockwise me-2"></i>Easy Returns</li>
+                        <li class="mb-2"><i class="bi bi-shield-check me-2"></i>Secure Payment</li>
+                        <li class="mb-2"><i class="bi bi-headset me-2"></i>24/7 Support</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Bottom Footer -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 WearWeb. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Made with <i class="bi bi-heart-fill text-danger"></i> for fashion lovers
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Your Cart</h2>
+
+<table class="table table-bordered">
+
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Quantity</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+
+{% for item in items %}
+
+<tr>
+
+<td>{{ item.product.name }}</td>
+
+<td>₹{{ item.product.price }}</td>
+
+<td>
+
+<a href="{% url 'decrease_quantity' item.id %}" class="btn btn-sm btn-danger">-</a>
+
+{{ item.quantity }}
+
+<a href="{% url 'increase_quantity' item.id %}" class="btn btn-sm btn-success">+</a>
+
+</td>
+
+<td>₹{{ item.subtotal }}</td>
+
+<td>
+
+<a href="{% url 'remove_item' item.id %}" class="btn btn-sm btn-dark">
+Remove
+</a>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="5">Cart is empty</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<h4>Total: ₹{{ total }}</h4>
+
+{% if items %}
+<a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+{% endif %}
+
+{% endblock %}

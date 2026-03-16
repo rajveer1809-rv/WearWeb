@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+  <div class="row g-4">
+
+    <!-- Left Sidebar: Categories and Filters -->
+    <div class="col-lg-3">
+      <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+        <div class="card-body">
+
+          <!-- Search Bar -->
+          <div class="mb-4">
+            <h5 class="card-title fw-bold mb-3">Search Products</h5>
+            <form method="GET" class="d-flex">
+              <input type="text" name="search" class="form-control me-2" placeholder="Search by name..." value="{{ search_query }}">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Categories -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Categories</h6>
+            <div class="category-filters">
+              <!-- All Products Link -->
+              <div class="mb-2">
+                <a href="{% url 'product_list' %}" class="text-decoration-none {% if not selected_category %}fw-bold text-dark{% else %}text-muted{% endif %}">
+                  All Products
+                </a>
+              </div>
+
+              <!-- Parent Categories -->
+              {% for parent in parent_categories %}
+              <div class="mb-2">
+                <button class="btn btn-link text-start p-0 w-100 fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#category-{{ parent.id }}" aria-expanded="{% if selected_category.parent_id == parent.id or selected_category.id == parent.id %}true{% else %}false{% endif %}">
+                  {{ parent.name }}
+                  <i class="bi bi-chevron-down float-end"></i>
+                </button>
+
+                <div class="collapse {% if selected_category.parent_id == parent.id or selected_category.id == parent.id %}show{% endif %}" id="category-{{ parent.id }}">
+                  <div class="ms-3 mt-2">
+                    <!-- Subcategories -->
+                    {% for child in parent.children.all %}
+                    <div class="mb-1">
+                      <a href="?category={{ child.id }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}{% if selected_size %}&size={{ selected_size }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}" class="text-decoration-none {% if selected_category.id == child.id %}fw-bold text-danger{% else %}text-muted{% endif %}">
+                        {{ child.name }}
+                      </a>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Filters</h6>
+
+            <!-- Color Filter -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Color</label>
+              <select name="color" class="form-select form-select-sm" onchange="applyFilters()">
+                <option value="">All Colors</option>
+                {% for color in available_colors %}
+                <option value="{{ color }}" {% if selected_color == color %}selected{% endif %}>{{ color }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Size Filter -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Size</label>
+              <select name="size" class="form-select form-select-sm" onchange="applyFilters()">
+                <option value="">All Sizes</option>
+                {% for size in available_sizes %}
+                <option value="{{ size }}" {% if selected_size == size %}selected{% endif %}>{{ size }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Price Range -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Price Range</label>
+              <div class="row g-1">
+                <div class="col-6">
+                  <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="{{ min_price }}" onchange="applyFilters()">
+                </div>
+                <div class="col-6">
+                  <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="{{ max_price }}" onchange="applyFilters()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Clear Filters -->
+            <div class="mb-3">
+              <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm w-100">Clear All Filters</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Products Grid -->
+    <div class="col-lg-9">
+      <div>
+        {% if selected_category or search_query or selected_color or selected_size or min_price or max_price %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="mb-0 fw-bold">
+            {% if search_query %}Search Results for "{{ search_query }}"{% elif selected_category %}{{ selected_category.name }}{% else %}Filtered Products{% endif %}
+          </h3>
+          <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-secondary">Clear All</a>
+        </div>
+
+        <!-- Active Filters Display -->
+        <div class="mb-3">
+          {% if selected_category %}
+          <span class="badge bg-primary me-1">Category: {{ selected_category.name }}</span>
+          {% endif %}
+          {% if search_query %}
+          <span class="badge bg-info me-1">Search: {{ search_query }}</span>
+          {% endif %}
+          {% if selected_color %}
+          <span class="badge bg-success me-1">Color: {{ selected_color }}</span>
+          {% endif %}
+          {% if selected_size %}
+          <span class="badge bg-warning text-dark me-1">Size: {{ selected_size }}</span>
+          {% endif %}
+          {% if min_price or max_price %}
+          <span class="badge bg-secondary me-1">Price: {% if min_price %}₹{{ min_price }}{% endif %} - {% if max_price %}₹{{ max_price }}{% endif %}</span>
+          {% endif %}
+        </div>
+        {% else %}
+        <h3 class="mb-4 fw-bold">All Products</h3>
+        {% endif %}
+
+        {% if products %}
+        <div class="row g-4">
+          {% for product in products %}
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="card product-card border-0 shadow-sm h-100">
+              <a href="{% url 'product_detail' product.id %}">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top product-img">
+                {% else %}
+                <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top product-img">
+                {% endif %}
+              </a>
+
+              <div class="card-body">
+                <h6 class="fw-semibold mb-1">{{ product.name }}</h6>
+                <p class="text-muted small mb-2">
+                  {% if product.category %}
+                    <span class="badge bg-light text-dark">{{ product.category.name }}</span>
+                  {% endif %}
+                  {% if product.color %}
+                    <span class="badge bg-info text-dark">{{ product.color }}</span>
+                  {% endif %}
+                  {% if product.size %}
+                    <span class="badge bg-warning text-dark">{{ product.size }}</span>
+                  {% endif %}
+                  {{ product.description|truncatewords:6 }}
+                </p>
+
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                  <span class="fw-bold text-dark">₹{{ product.price }}</span>
+
+                  <div class="d-flex gap-2">
+                    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-dark">Add</a>
+
+                    {% if user.is_authenticated and user.role != 'vendor' %}
+                    <a href="{% url 'like_product' product.id %}" class="btn btn-sm btn-outline-danger like-btn">
+                      {% if product.id in liked_products %}❤️{% else %}🤍{% endif %}
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+          <h5>No products found</h5>
+          <p>Try adjusting your search or filters to find what you're looking for.</p>
+          <a href="{% url 'product_list' %}" class="btn btn-primary">Browse All Products</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Function to apply filters dynamically
+function applyFilters() {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // Get current filter values
+  const color = document.querySelector('select[name="color"]').value;
+  const size = document.querySelector('select[name="size"]').value;
+  const minPrice = document.querySelector('input[name="min_price"]').value;
+  const maxPrice = document.querySelector('input[name="max_price"]').value;
+
+  // Update URL parameters
+  if (color) urlParams.set('color', color); else urlParams.delete('color');
+  if (size) urlParams.set('size', size); else urlParams.delete('size');
+  if (minPrice) urlParams.set('min_price', minPrice); else urlParams.delete('min_price');
+  if (maxPrice) urlParams.set('max_price', maxPrice); else urlParams.delete('max_price');
+
+  // Redirect with new filters
+  window.location.search = urlParams.toString();
+}
+</script>
+
+<style>
+  .product-card {
+    transition: all .3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .product-img {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .category-filters a {
+    transition: all .2s;
+  }
+
+  .category-filters a:hover {
+    color: #dc3545 !important;
+  }
+
+  .btn-link {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  .btn-link:hover {
+    color: #dc3545 !important;
+  }
+
+  .badge {
+    font-size: 0.75em;
+  }
+
+  @media (max-width: 992px) {
+    .sticky-top {
+      position: relative !important;
+      top: 0 !important;
+    }
+  }
+</style>
+
+{% endblock %}

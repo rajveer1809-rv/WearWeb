@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Process Payment</h2>
+
+<p>Order ID: {{ order.id }}</p>
+<p>Total: ₹{{ order.total_price }}</p>
+<p>Payment Method: {{ order.get_payment_method_display }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <p>Simulating payment processing...</p>
+    <button type="submit" class="btn btn-success">Confirm Payment</button>
+</form>
+
+{% endblock %}
