@@ -52,8 +52,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom user model using email for authentication.
     """
-
+    
     email = models.EmailField(unique=True)
+
+    name = models.CharField(max_length=100, blank=False, default="")
 
     ROLE_CHOICES = (
         ("admin", "Admin"),

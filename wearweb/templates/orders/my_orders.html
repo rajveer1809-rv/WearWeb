@@ -20,9 +20,13 @@
                 <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: ₹{{ item.price }}</li>
             {% endfor %}
         </ul>
-        {% if order.status in 'Pending,Paid' %}
-            <a href="{% url 'cancel_order' order.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</a>
-        {% endif %}
+        <div class="mt-3">
+            <a href="{% url 'order_receipt' order.id %}" class="btn btn-sm btn-info text-white">View Receipt</a>
+            <a href="{% url 'create_dispute' order.id %}" class="btn btn-sm btn-warning">File Dispute</a>
+            {% if order.status in 'Pending,Paid' %}
+                <a href="{% url 'cancel_order' order.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel Order</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 

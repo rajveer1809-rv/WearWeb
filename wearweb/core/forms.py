@@ -5,6 +5,10 @@ from .models import User
 
 class SignupForm(UserCreationForm):
 
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={"class": "form-control"})
     )
@@ -24,7 +28,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ["email", "role", "password1", "password2"]
+        fields = ["name", "email", "role", "password1", "password2"]
 
 
 class LoginForm(forms.Form):

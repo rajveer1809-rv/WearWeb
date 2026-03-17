@@ -70,3 +70,36 @@ class OrderItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.product.name} x {self.quantity}"
+
+
+class Dispute(models.Model):
+    """
+    Model representing a user dispute for an order.
+    """
+
+    order = models.ForeignKey(
+        Order,
+        related_name="disputes",
+        on_delete=models.CASCADE
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    subject = models.CharField(max_length=200)
+
+    description = models.TextField()
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('Open', 'Open'),
+            ('Resolved', 'Resolved'),
+            ('Closed', 'Closed'),
+        ],
+        default="Open"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Dispute {self.id} for Order {self.order.id} - {self.status}"

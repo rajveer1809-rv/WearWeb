@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Disputes & Policy Compliance{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Disputes & Policy Compliance</h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">&larr; Back to Dashboard</a>
+    </div>
+
+    {% if disputes %}
+    <div class="row">
+        {% for dispute in disputes %}
+        <div class="col-md-12 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge 
+                                {% if dispute.status == 'Open' %}bg-danger
+                                {% elif dispute.status == 'Resolved' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ dispute.status }}
+                            </span>
+                            <small class="text-muted ms-2">{{ dispute.created_at|date:"M d, Y, g:i a" }}</small>
+                            <strong class="ms-2">Order #{{ dispute.order.id }}</strong>
+                        </div>
+                        <div>
+                            {% if dispute.status == 'Open' %}
+                            <form action="{% url 'resolve_dispute' dispute.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="resolve">
+                                <button class="btn btn-sm btn-success">Mark as Resolved</button>
+                            </form>
+                            <form action="{% url 'resolve_dispute' dispute.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="close">
+                                <button class="btn btn-sm btn-outline-secondary">Close Dispute</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h5 class="card-title">{{ dispute.subject }}</h5>
+                    <p class="card-text border p-2 bg-light">{{ dispute.description }}</p>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Customer</h6>
+                            <p>{{ dispute.user.email }}</p>
+                            {% if dispute.user.is_active %}
+                            <form action="{% url 'deactivate_user' dispute.user.id %}" method="post" onsubmit="return confirm('Are you sure you want to deactivate this user for policy violation?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Deactivate Customer</button>
+                            </form>
+                            {% else %}
+                            <span class="text-danger">Deactivated</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Order Details</h6>
+                            <p>Status: {{ dispute.order.status }}</p>
+                            <a href="{% url 'order_receipt' dispute.order.id %}" target="_blank" class="btn btn-sm btn-info">View Order Receipt</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <svg class="mx-auto mb-3" height="50" width="50" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h5>No disputes found</h5>
+        <p class="text-muted">There are no user disputes to manage at this time.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

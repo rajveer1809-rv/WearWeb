@@ -1,5 +1,23 @@
 from django import forms
-from .models import Product, Category
+from .models import Product, Category, Review
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(
+                choices=Review.RATING_CHOICES,
+                attrs={'class': 'form-check-input'}
+            ),
+            'comment': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': 'Share your experience with this product...'
+                }
+            ),
+        }
 
 class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(

@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Product, Category, ProductLike
-from .forms import ProductForm
+from django.db.models import Avg, Count, Q
+from .models import Product, Category, ProductLike, Review
+from .forms import ProductForm, ReviewForm
 
 
 def product_list(request):
@@ -80,15 +81,46 @@ def product_detail(request, pk):
 
     product = get_object_or_404(Product, id=pk)
     is_liked = False
+    user_review = None
+    review_form = ReviewForm()
 
     if request.user.is_authenticated:
         is_liked = ProductLike.objects.filter(
             user=request.user, product=product
         ).exists()  # type: ignore
+        user_review = Review.objects.filter(
+            user=request.user, product=product
+        ).first()
+
+    # Handle review submission
+    if request.method == "POST" and request.user.is_authenticated:
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            return redirect('product_detail', pk=product.id)
+
+    # Get all reviews for the product
+    reviews = Review.objects.filter(product=product)
+    
+    # Calculate average rating
+    rating_stats = reviews.aggregate(
+        avg_rating=Avg('rating'),
+        total_reviews=Count('id')
+    )
+    avg_rating = rating_stats['avg_rating'] or 0
+    total_reviews = rating_stats['total_reviews'] or 0
 
     return render(request, "products/product_detail.html", {
         "product": product,
         "is_liked": is_liked,
+        "reviews": reviews,
+        "avg_rating": round(avg_rating, 1),
+        "total_reviews": total_reviews,
+        "user_review": user_review,
+        "review_form": review_form,
     })
 
 

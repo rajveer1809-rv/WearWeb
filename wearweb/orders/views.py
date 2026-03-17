@@ -6,7 +6,40 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from cart.models import Cart
 from .models import Order, OrderItem
-from .forms import CheckoutForm
+from .forms import CheckoutForm, DisputeForm
+
+
+@login_required
+def order_receipt(request, order_id):
+    """
+    Display order receipt.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, "orders/receipt.html", {"order": order})
+
+
+@login_required
+def create_dispute(request, order_id):
+    """
+    Create a dispute for an order.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if request.method == "POST":
+        form = DisputeForm(request.POST)
+        if form.is_valid():
+            dispute = form.save(commit=False)
+            dispute.order = order
+            dispute.user = request.user
+            dispute.save()
+            return redirect("my_orders")
+    else:
+        form = DisputeForm()
+
+    return render(request, "orders/create_dispute.html", {
+        "order": order,
+        "form": form
+    })
 
 
 @login_required

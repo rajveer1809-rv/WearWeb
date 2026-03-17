@@ -10,9 +10,13 @@
 
 <h3 class="mb-4 text-center">My Profile</h3>
 
-<p><strong>Name:</strong> {{ user.username }}</p>
+<p><strong>Name:</strong> {{ user.name }}</p>
 
 <p><strong>Email:</strong> {{ user.email }}</p>
+
+<p><strong>Last Login:</strong> {{ user.last_login|date:"F j, Y, g:i a" }}</p>
+
+<p><strong>address:</strong> {{ user.address }}</p>
 
 <p><strong>Role:</strong> {{ user.role }}</p>
 

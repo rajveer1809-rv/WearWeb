@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <!-- Total Sales -->
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Platform Sales</h5>
+                    <h3>₹{{ total_platform_sales|default:"0.00" }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Successful Orders -->
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Successful Orders</h5>
+                    <h3>{{ successful_orders_count }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Users -->
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h3>{{ total_users }}</h3>
+                    <p class="text-white-50">+{{ new_users_last_30_days }} in 30 days</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Disputes -->
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Active Disputes</h5>
+                    <h3>{{ active_disputes.count }}</h3>
+                    <a href="{% url 'manage_disputes' %}" class="btn btn-light btn-sm mt-2">Manage Disputes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Products Table -->
+    <h3 class="mb-3">Low Stock Products</h3>
+    <div class="table-responsive mb-5">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Vendor</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in low_stock_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.vendor.email }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary">View</a>
+                        <a href="{% url 'update_product' product.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No low stock products.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Open Disputes Table -->
+    <h3 class="mb-3">Recent Open Disputes</h3>
+    <div class="table-responsive mb-5">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Order ID</th>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dispute in active_disputes|slice:":5" %}
+                <tr>
+                    <td>{{ dispute.subject }}</td>
+                    <td>{{ dispute.order.id }}</td>
+                    <td>{{ dispute.user.email }}</td>
+                    <td>{{ dispute.status }}</td>
+                    <td>
+                        <a href="{% url 'manage_disputes' %}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No active disputes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Users Table -->
+    <h3 class="mb-3">Recent Users</h3>
+    <div class="table-responsive mb-5">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in recent_users|slice:":5" %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'user_detail' user.id %}" class="btn btn-sm btn-primary">View</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No recent users.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

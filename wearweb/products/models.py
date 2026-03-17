@@ -70,3 +70,34 @@ class ProductLike(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.email} likes {self.product.name}"
+
+
+class Review(models.Model):
+    """
+    Model to store product reviews and ratings.
+    """
+
+    RATING_CHOICES = (
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    )
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='reviews'
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """Meta class for Review."""
+        unique_together = ('user', 'product')
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f"{self.product.name} - {self.user.email} ({self.rating} stars)"

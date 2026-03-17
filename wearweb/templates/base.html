@@ -69,7 +69,18 @@
                     </li>
 
                     {% if user.is_authenticated %}
-                        {% if user.role == "vendor" %}
+                        {% if user.role == "admin" %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'manage_disputes' %}">
+                                    <i class="bi bi-shield-exclamation"></i> Disputes
+                                </a>
+                            </li>
+                        {% elif user.role == "vendor" %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'vendor_products' %}">
                                     <i class="bi bi-box-seam"></i> My Products
