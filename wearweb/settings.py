@@ -90,13 +90,23 @@ WSGI_APPLICATION = 'wearweb.wsgi.application'
 # ========================
 # DATABASE (CORRECT FOR RENDER)
 # ========================
-DATABASES = {
-    'default': dj_database_url.parse(
-        "postgresql://wearweb_user:jO2imasqDffZlwS3jGCuFIBLrxnQ2Pfa@dpg-d70j3ip5pdvs7398m4l0-a/wearweb"
-    )
-}
-
-# 👉 Replace above URL with your Render DATABASE_URL
+if os.environ.get("RENDER"):
+    DATABASES = {
+        'default': dj_database_url.parse(
+            "postgresql://wearweb_user:jO2imasqDffZlwS3jGCuFIBLrxnQ2Pfa@dpg-d70j3ip5pdvs7398m4l0-a/wearweb"
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'wearweb',
+            'USER': 'postgres',
+            'PASSWORD': 'rv18',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # ========================
 # PASSWORD VALIDATION
