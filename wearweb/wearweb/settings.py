@@ -13,6 +13,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
+# RAZORPAY CONFIGURATION
+RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_HERE'  # TODO: Replace with your actual Test Key ID
+RAZORPAY_KEY_SECRET = 'YOUR_SECRET_HERE'    # TODO: Replace with your actual Test Key Secret
+PLATFORM_COMMISSION_PERCENTAGE = 10         # Default 10% commission for the platform
+
 # EMAIL CONFIGURATION FOR REAL DELIVERY
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

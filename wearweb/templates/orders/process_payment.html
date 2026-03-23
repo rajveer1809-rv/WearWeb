@@ -2,16 +2,49 @@
 
 {% block content %}
 
-<h2>Process Payment</h2>
+<div class="max-w-md mx-auto py-10">
+    <div class="glass-card text-center p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-xl dark:bg-gray-900 bg-white">
+        <h2 class="text-2xl font-bold mb-4">Complete Payment</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Total Amount: ₹{{ order.total_price }}</p>
 
-<p>Order ID: {{ order.id }}</p>
-<p>Total: ₹{{ order.total_price }}</p>
-<p>Payment Method: {{ order.get_payment_method_display }}</p>
+        <!-- Razorpay Checkout Form -->
+        <form action="{% url 'verify_payment' %}" method="POST">
+            {% csrf_token %}
+            <!-- This script renders the Razorpay Pay Now button -->
+            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                    data-key="{{ razorpay_key_id }}"
+                    data-amount="{{ amount_in_paise }}"
+                    data-currency="{{ currency }}"
+                    data-order_id="{{ razorpay_order_id }}"
+                    data-buttontext="Pay with Razorpay"
+                    data-name="WearWeb"
+                    data-description="Order #{{ order.id }}"
+                    data-image="https://your-logo-url.com/logo.png"
+                    data-prefill.name="{{ user.name }}"
+                    data-prefill.email="{{ user.email }}"
+                    data-theme.color="#000000">
+            </script>
+        </form>
+    </div>
+</div>
 
-<form method="POST">
-    {% csrf_token %}
-    <p>Simulating payment processing...</p>
-    <button type="submit" class="btn btn-success">Confirm Payment</button>
-</form>
+<style>
+/* Style the auto-generated Razorpay button to match our theme */
+.razorpay-payment-button {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+.razorpay-payment-button:hover {
+    background-color: #333333;
+}
+</style>
 
 {% endblock %}

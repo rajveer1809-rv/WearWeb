@@ -76,6 +76,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
+    razorpay_account_id = models.CharField(max_length=100, blank=True, null=True, help_text="Razorpay Linked Account ID for vendors")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()

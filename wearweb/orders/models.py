@@ -33,11 +33,13 @@ class Order(models.Model):
     phone = models.CharField(max_length=15)
 
     payment_method = models.CharField(max_length=20, choices=[
-        ('credit_card', 'Credit Card'),
-        ('debit_card', 'Debit Card'),
-        ('paypal', 'PayPal'),
+        ('razorpay', 'Razorpay'),
         ('cash_on_delivery', 'Cash on Delivery'),
-    ])
+    ], default='razorpay')
+
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=200, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
