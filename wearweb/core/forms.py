@@ -34,9 +34,12 @@ class SignupForm(UserCreationForm):
 class LoginForm(forms.Form):
 
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={"class": "form-control"})
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"})
     )
 
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "form-control"})
+
+class OTPVerifyForm(forms.Form):
+    otp_code = forms.CharField(
+        max_length=6,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter 6-digit OTP", "autocomplete": "off"})
     )

@@ -6,34 +6,30 @@
 <div class="glass-card">
 
 <h2 class="text-center mb-3">
-Login
+Verify OTP
 </h2>
 
-<form method="POST">
+<p class="text-center mb-3">Enter the 6-digit code sent to {{ email }}</p>
 
+<form method="POST">
 {% csrf_token %}
 
 {% if form.errors %}
 <div class="alert alert-danger">
-Invalid email or password
+Invalid OTP
 </div>
 {% endif %}
 
 <div class="mb-3">
-<label>Email</label>
-{{ form.email }}
+<label>OTP Code</label>
+{{ form.otp_code }}
 </div>
 
 <button type="submit" class="btn btn-primary w-100">
-Login
+Verify & Login
 </button>
 
 </form>
-
-<p class="text-center mt-3">
-Don't have an account?
-<a href="{% url 'signup' %}">Signup</a>
-</p>
 
 </div>
 </div>

@@ -10,7 +10,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-q63vb%o5w6qlx0$o)%kgg5bfybt9d75404y0$&gmb7*lul^um$'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+
+# EMAIL CONFIGURATION FOR REAL DELIVERY
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'noreply.wearweb@gmail.com'  # TODO: Put your actual email here
+EMAIL_HOST_PASSWORD = 'jgdy ksas waye yumw'  # TODO: Put your generated app password here
 
 
 # APPLICATIONS

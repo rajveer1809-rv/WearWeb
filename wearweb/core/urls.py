@@ -9,7 +9,11 @@ urlpatterns = [
 
     path("login/", views.login_view, name="login"),
 
+    path("verify-otp/", views.verify_otp_view, name="verify_otp"),
+
     path("logout/", views.logout_view, name="logout"),
 
     path("profile/", views.profile_view, name="profile"),
+    
+    path("contact/", views.contact_us_view, name="contactus"),
 ]
