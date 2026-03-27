@@ -37,6 +37,10 @@ class LoginForm(forms.Form):
         widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"})
     )
 
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password"})
+    )
+
 
 class OTPVerifyForm(forms.Form):
     otp_code = forms.CharField(

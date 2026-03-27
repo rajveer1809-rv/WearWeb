@@ -74,39 +74,26 @@ def login_view(request):
     form = LoginForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
-        email = form.cleaned_data["email"]
+        email = form.cleaned_data.get("email")
+        password = form.cleaned_data.get("password")
         
-        User = get_user_model()
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            form.add_error("email", "User with this email does not exist.")
+        user = authenticate(request, email=email, password=password)
+        
+        if user is not None:
+            login(request, user)
+            
+            # Clean up old OTP session variables if they exist
+            if 'login_email' in request.session:
+                del request.session['login_email']
+                
+            if user.role == "vendor":
+                return redirect("vendor_dashboard")
+            elif user.role == "admin":
+                return redirect("/admin/")
+            return redirect("home")
+        else:
+            form.add_error(None, "Invalid email or password.")
             return render(request, "core/login.html", {"form": form})
-
-        # Generate OTP
-        otp_code = str(random.randint(100000, 999999))
-        
-        # Save OTP to DB
-        OTP.objects.filter(email=email).delete()  # clear old OTPs
-        OTP.objects.create(email=email, otp_code=otp_code)
-
-        # Send Email
-        try:
-            send_mail(
-                'Your Login OTP',
-                f'Your OTP for login is {otp_code}',
-                'noreply@wearweb.com',
-                [email],
-                fail_silently=False,
-            )
-        except Exception as e:
-            print(f"FAILED TO SEND OTP EMAIL: {e}")
-            print(f"OTP for {email} is: {otp_code}")
-            from django.contrib import messages
-            messages.error(request, "Failed to send OTP email. Please check the server console for the OTP (Local Dev) or contact support.")
-
-        request.session['login_email'] = email
-        return redirect("verify_otp")
 
     return render(
         request,
