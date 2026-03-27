@@ -19,13 +19,20 @@ CSRF_TRUSTED_ORIGINS = [
 # ========================
 # EMAIL CONFIGURATION
 # ========================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply.wearweb@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') # Set this in Render Dashboard
-EMAIL_TIMEOUT = 5 # Timeout so Gunicorn doesn't kill the worker if SMTP is blocked
+if os.environ.get('SENDGRID_API_KEY'):
+    EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
+    ANYMAIL = {
+        "SENDGRID_API_KEY": os.environ.get('SENDGRID_API_KEY'),
+    }
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'noreply@wearweb.com')
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply.wearweb@gmail.com')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') # Set this in Render Dashboard
+    EMAIL_TIMEOUT = 5 # Timeout so Gunicorn doesn't kill the worker if SMTP is blocked
 
 # ========================
 # APPLICATIONS
@@ -43,6 +50,7 @@ INSTALLED_APPS = [
     'products',
     'orders',
     'dashboard',
+    'anymail',
 ]
 
 # ========================
