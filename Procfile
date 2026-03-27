@@ -1,1 +1,1 @@
-web: gunicorn wearweb.wsgi
+web: gunicorn wearweb.wsgi:application --preload --log-level debug --bind 0.0.0.0:$PORT

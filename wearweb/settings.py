@@ -17,22 +17,32 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # ========================
-# EMAIL CONFIGURATION
+# LOGGING
 # ========================
-if os.environ.get('SENDGRID_API_KEY'):
-    EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
-    ANYMAIL = {
-        "SENDGRID_API_KEY": os.environ.get('SENDGRID_API_KEY'),
-    }
-    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'noreply@wearweb.com')
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply.wearweb@gmail.com')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') # Set this in Render Dashboard
-    EMAIL_TIMEOUT = 5 # Timeout so Gunicorn doesn't kill the worker if SMTP is blocked
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
+import logging
+logger = logging.getLogger(__name__)
+logger.info("Settings loaded and logging initialized.")
 
 # ========================
 # APPLICATIONS
@@ -50,7 +60,6 @@ INSTALLED_APPS = [
     'products',
     'orders',
     'dashboard',
-    'anymail',
 ]
 
 # ========================
@@ -116,7 +125,11 @@ if os.environ.get("RENDER") or os.environ.get("DATABASE_URL"):
         default=os.environ.get("DATABASE_URL", "postgresql://wearweb_user:jO2imasqDffZlwS3jGCuFIBLrxnQ2Pfa@dpg-d70j3ip5pdvs7398m4l0-a/wearweb"),
         conn_max_age=500
     )
-    DATABASES['default'].update(db_from_env)
+    if db_from_env:
+        DATABASES['default'] = db_from_env
+        logger.info(f"Database configured from environment: {DATABASES['default'].get('HOST')}")
+    else:
+        logger.warning("DATABASE_URL was set but dj_database_url returned empty config.")
 
 # ========================
 # PASSWORD VALIDATION

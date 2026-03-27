@@ -40,10 +40,3 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password"})
     )
-
-
-class OTPVerifyForm(forms.Form):
-    otp_code = forms.CharField(
-        max_length=6,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter 6-digit OTP", "autocomplete": "off"})
-    )
