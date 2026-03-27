@@ -90,23 +90,24 @@ WSGI_APPLICATION = 'wearweb.wsgi.application'
 # ========================
 # DATABASE (CORRECT FOR RENDER)
 # ========================
-if os.environ.get("RENDER"):
-    DATABASES = {
-        'default': dj_database_url.parse(
-            "postgresql://wearweb_user:jO2imasqDffZlwS3jGCuFIBLrxnQ2Pfa@dpg-d70j3ip5pdvs7398m4l0-a/wearweb"
-        )
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'wearweb',
+        'USER': 'postgres',
+        'PASSWORD': 'rv18',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'wearweb',
-            'USER': 'postgres',
-            'PASSWORD': 'rv18',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+}
+
+# In production on Render, we use dj_database_url to parse the database connection string
+if os.environ.get("RENDER") or os.environ.get("DATABASE_URL"):
+    db_from_env = dj_database_url.config(
+        default=os.environ.get("DATABASE_URL", "postgresql://wearweb_user:jO2imasqDffZlwS3jGCuFIBLrxnQ2Pfa@dpg-d70j3ip5pdvs7398m4l0-a/wearweb"),
+        conn_max_age=500
+    )
+    DATABASES['default'].update(db_from_env)
 
 # ========================
 # PASSWORD VALIDATION
