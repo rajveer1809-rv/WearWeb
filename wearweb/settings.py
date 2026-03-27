@@ -25,6 +25,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply.wearweb@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '') # Set this in Render Dashboard
+EMAIL_TIMEOUT = 5 # Timeout so Gunicorn doesn't kill the worker if SMTP is blocked
 
 # ========================
 # APPLICATIONS
