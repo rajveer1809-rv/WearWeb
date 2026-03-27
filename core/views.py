@@ -91,13 +91,19 @@ def login_view(request):
         OTP.objects.create(email=email, otp_code=otp_code)
 
         # Send Email
-        send_mail(
-            'Your Login OTP',
-            f'Your OTP for login is {otp_code}',
-            'noreply@wearweb.com',
-            [email],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                'Your Login OTP',
+                f'Your OTP for login is {otp_code}',
+                'noreply@wearweb.com',
+                [email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"FAILED TO SEND OTP EMAIL: {e}")
+            print(f"OTP for {email} is: {otp_code}")
+            from django.contrib import messages
+            messages.error(request, "Failed to send OTP email. Please check the server console for the OTP (Local Dev) or contact support.")
 
         request.session['login_email'] = email
         return redirect("verify_otp")
