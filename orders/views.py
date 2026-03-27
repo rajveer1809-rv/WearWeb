@@ -3,9 +3,6 @@ Views for orders app.
 """
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
@@ -129,18 +126,6 @@ def process_payment(request, order_id):
         order.status = 'Paid'
         order.save()
 
-        # Send receipt email
-        html_message = render_to_string("orders/emails/order_receipt.html", {"order": order})
-        plain_message = strip_tags(html_message)
-        send_mail(
-            subject=f"WearWeb - Order #{order.id} Receipt",
-            message=plain_message,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[order.user.email],
-            html_message=html_message,
-            fail_silently=True,
-        )
-
         return redirect("order_success")
 
     return render(request, "orders/process_payment.html", {
@@ -173,18 +158,6 @@ def cancel_order(request, order_id):
     if order.status in ['Pending', 'Paid']:
         order.status = 'Cancelled'
         order.save()
-
-        # Send cancellation email
-        html_message = render_to_string("orders/emails/order_cancelled.html", {"order": order})
-        plain_message = strip_tags(html_message)
-        send_mail(
-            subject=f"WearWeb - Order #{order.id} Cancelled",
-            message=plain_message,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[order.user.email],
-            html_message=html_message,
-            fail_silently=True,
-        )
 
     return redirect('my_orders')
 

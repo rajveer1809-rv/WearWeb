@@ -14,4 +14,6 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
     
     path("contact/", views.contact_us_view, name="contactus"),
+
+    path("health/", views.health_check, name="health_check"),
 ]

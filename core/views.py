@@ -6,6 +6,14 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render, redirect
 from products.models import Product, Category, ProductLike
 from .forms import SignupForm, LoginForm
+from django.http import HttpResponse
+
+
+def health_check(request):
+    """
+    Simple health check view.
+    """
+    return HttpResponse("OK", status=200)
 
 
 def home_view(request):
